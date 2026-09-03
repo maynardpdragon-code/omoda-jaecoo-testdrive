@@ -80,7 +80,7 @@ async function handleCallNext(carId) {
             const car  = cars.find(c => c.id === carId);
             playVoiceAnnouncement(result.next.ticketNumber, car?.model || carId);
 
-            // The backend already sent the SMS (via Traccar SMS Gateway) as part
+            // The backend already sent the SMS (via Semaphore) as part
             // of call-next — just reflect what happened to the admin here.
             const sms = result.sms;
             let smsNote = '';
@@ -144,11 +144,11 @@ function playVoiceAnnouncement(ticketNumber, carModel) {
 }
 
 // ── SMS notifications ─────────────────────────────────────────────────────────
-// The backend sends these automatically via Traccar SMS Gateway when a ticket
+// The backend sends these automatically via Semaphore when a ticket
 // is called (see backend/sms.js + routes/queue.js) — nothing to do here beyond
 // reflecting the result, handled inline in handleCallNext() above. Configure
-// TRACCAR_SMS_ENABLED / TRACCAR_SMS_URL / TRACCAR_SMS_TOKEN as environment
-// variables on the server; no API keys are ever exposed to the browser.
+// SEMAPHORE_SMS_ENABLED / SEMAPHORE_API_KEY / SEMAPHORE_SENDER_NAME as
+// environment variables on the server; no API keys are ever exposed to the browser.
 
 // ── Responses Table ───────────────────────────────────────────────────────────
 async function updateResponseTable() {
