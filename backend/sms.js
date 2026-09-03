@@ -1,90 +1,93 @@
 // backend/sms.js
-// Sends ticket-called SMS notifications through the Semaphore SMS API
-// (https://semaphore.co/ — a Philippine SMS gateway, no phone/SIM needed).
+// Sends ticket-called SMS notifications through a Traccar SMS Gateway endpoint
+// (https://github.com/traccar/traccar-sms-gateway — an Android app that turns a
+// phone with a SIM into a simple HTTP-triggered SMS sender).
 //
-// Setup:
-//   1. Create an account at https://semaphore.co/ and load it with credits
-//      (each SMS costs 1 credit).
-//   2. Grab your API key from the Semaphore dashboard.
-//   3. Set these environment variables on the server:
-//        SEMAPHORE_SMS_ENABLED = true
-//        SEMAPHORE_API_KEY     = <your API key>
-//        SEMAPHORE_SENDER_NAME = <optional — a registered sender name; if
-//                                 omitted, Semaphore uses your account's
-//                                 default sender name>
+// Two ways to point this at a gateway, both use the same request shape:
 //
-// SMS is fully optional — with SEMAPHORE_SMS_ENABLED unset (or not "true"),
-// call-next simply skips it.
+//   1. Traccar's cloud relay (recommended for a cloud-hosted backend like Render):
+//        TRACCAR_SMS_URL   = https://www.traccar.org/sms/
+//        TRACCAR_SMS_TOKEN = the "Cloud" key shown in the app's Cloud tab
+//      Render's servers never need to reach your phone directly — Traccar's
+//      relay forwards the request to the app over push notification.
 //
-// API docs: https://www.semaphore.co/docs
+//   2. The app's own local HTTP API (only reachable if the backend and the
+//      phone are on the same network, or the phone is tunneled/port-forwarded):
+//        TRACCAR_SMS_URL   = http://<phone-local-ip>:8082/
+//        TRACCAR_SMS_TOKEN = the "Local" key shown in the app's Local tab
+//
+// See the deployment guide for how to obtain each key. SMS is fully optional —
+// with TRACCAR_SMS_ENABLED unset (or not "true"), call-next simply skips it.
 
-const ENABLED     = String(process.env.SEMAPHORE_SMS_ENABLED || '').toLowerCase() === 'true';
-const API_KEY      = process.env.SEMAPHORE_API_KEY || '';
-const SENDER_NAME  = process.env.SEMAPHORE_SENDER_NAME || '';
-const API_URL       = 'https://api.semaphore.co/api/v4/messages';
+const ENABLED      = String(process.env.TRACCAR_SMS_ENABLED || '').toLowerCase() === 'true';
+const GATEWAY_URL   = process.env.TRACCAR_SMS_URL || 'https://www.traccar.org/sms/';
+const GATEWAY_TOKEN = process.env.TRACCAR_SMS_TOKEN || '';
+const COUNTRY_CODE  = process.env.TRACCAR_SMS_COUNTRY_CODE || '+63';
+const SIM_SLOT      = process.env.TRACCAR_SMS_SIM_SLOT; // optional: "0" or "1" for dual-SIM phones
 const TIMEOUT_MS    = 10000;
 
 /**
- * Sends one SMS via the Semaphore API. Semaphore accepts PH mobile numbers
- * in local format (e.g. "09171234567"), which is exactly the format enforced
- * by routes/registrations.js — no conversion needed.
- *
- * Never throws — always resolves to a status object so a flaky gateway, an
- * out-of-credits account, or a missing config can never break the
- * queue-calling flow that triggers it.
+ * Converts a local PH mobile number (e.g. "09171234567", the format enforced
+ * by routes/registrations.js) into international format ("+639171234567") —
+ * the format Android's SmsManager (used internally by the gateway app) expects
+ * most reliably regardless of the phone's own region settings.
+ */
+function toInternational(localNumber) {
+    const digits = String(localNumber || '').trim();
+    if (digits.startsWith('+')) return digits;
+    if (digits.startsWith('0'))  return COUNTRY_CODE + digits.slice(1);
+    return COUNTRY_CODE + digits;
+}
+
+/**
+ * Sends one SMS via the configured Traccar SMS Gateway endpoint.
+ * Never throws — always resolves to a status object so a flaky gateway or a
+ * missing config can never break the queue-calling flow that triggers it.
  *
  * @returns {Promise<{sent: boolean, skipped: boolean, reason?: string}>}
  */
 async function sendSms(toNumber, message) {
     if (!ENABLED) {
-        return { sent: false, skipped: true, reason: 'SMS notifications are turned off (SEMAPHORE_SMS_ENABLED is not "true").' };
+        return { sent: false, skipped: true, reason: 'SMS notifications are turned off (TRACCAR_SMS_ENABLED is not "true").' };
     }
-    if (!API_KEY) {
-        return { sent: false, skipped: true, reason: 'SEMAPHORE_API_KEY is not set.' };
+    if (!GATEWAY_TOKEN) {
+        return { sent: false, skipped: true, reason: 'TRACCAR_SMS_TOKEN is not set.' };
     }
 
-    const params = new URLSearchParams({
-        apikey: API_KEY,
-        number: String(toNumber || '').trim(),
-        message,
-    });
-    if (SENDER_NAME) params.set('sendername', SENDER_NAME);
+    const payload = { to: toInternational(toNumber), message };
+    if (SIM_SLOT !== undefined && SIM_SLOT !== '') payload.slot = Number(SIM_SLOT);
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(GATEWAY_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params.toString(),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': GATEWAY_TOKEN,
+            },
+            body: JSON.stringify(payload),
             signal: controller.signal,
         });
         clearTimeout(timer);
 
-        const body = await response.json().catch(() => null);
-
         if (!response.ok) {
-            const reason = body?.message || (body ? JSON.stringify(body).slice(0, 200) : '');
-            return { sent: false, skipped: false, reason: `Semaphore responded ${response.status}${reason ? ': ' + reason : ''}` };
+            const body = await response.text().catch(() => '');
+            return {
+                sent: false,
+                skipped: false,
+                reason: `Gateway responded ${response.status}${body ? ': ' + body.slice(0, 200) : ''}`,
+            };
         }
-
-        // Semaphore returns an array with one entry per recipient; a failed
-        // send still comes back with HTTP 200 but an error message instead
-        // of an array, so check the shape before declaring success.
-        if (!Array.isArray(body) || !body[0]?.message_id) {
-            const reason = body?.message || (body ? JSON.stringify(body).slice(0, 200) : 'Unexpected response from Semaphore.');
-            return { sent: false, skipped: false, reason };
-        }
-
         return { sent: true, skipped: false };
     } catch (err) {
         clearTimeout(timer);
         const reason = err.name === 'AbortError'
-            ? 'Timed out waiting for Semaphore.'
-            : (err.message || 'Unknown error contacting Semaphore.');
+            ? 'Timed out waiting for the SMS gateway.'
+            : (err.message || 'Unknown error contacting the SMS gateway.');
         return { sent: false, skipped: false, reason };
     }
 }
 
-module.exports = { sendSms };
+module.exports = { sendSms, toInternational };

@@ -12,7 +12,7 @@ testdrive/
 │   ├── server.js          # Express entry point
 │   ├── db.js              # SQLite init, schema, seed
 │   ├── package.json
-│   ├── sms.js              # Semaphore SMS API integration (server-side only)
+│   ├── sms.js              # Traccar SMS Gateway integration (server-side only)
 │   └── routes/
 │       ├── cars.js        # CRUD for vehicles
 │       ├── registrations.js  # CRUD for queue entries
@@ -85,17 +85,18 @@ DISPLAY_USER=tvscreen   DISPLAY_PASS=mypassword
 REGISTER_USER=kiosk     REGISTER_PASS=mypassword
 ```
 
-### SMS notifications (Semaphore)
+### SMS notifications (Traccar SMS Gateway)
 
-Ticket-called SMS alerts are sent server-side, from `backend/sms.js`, through the [Semaphore](https://semaphore.co/) SMS API — a Philippine SMS gateway billed per credit (1 credit = 1 SMS), no phone/SIM required. Nothing is sent, and no key is ever exposed to the browser, until you turn it on with environment variables:
+Ticket-called SMS alerts are sent server-side, from `backend/sms.js`, through the free [Traccar SMS Gateway](https://github.com/traccar/traccar-sms-gateway) Android app — no third-party SMS billing account needed, it sends through a phone's own SIM. Nothing is sent, and no key is ever exposed to the browser, until you turn it on with environment variables:
 
 ```bash
-SEMAPHORE_SMS_ENABLED=true
-SEMAPHORE_API_KEY=<your API key from the Semaphore dashboard>
-SEMAPHORE_SENDER_NAME=<optional — a registered sender name>
+TRACCAR_SMS_ENABLED=true
+TRACCAR_SMS_URL=https://www.traccar.org/sms/     # or http://<phone-ip>:8082/ for the local API
+TRACCAR_SMS_TOKEN=<the Cloud or Local key from the app>
+TRACCAR_SMS_COUNTRY_CODE=+63                     # optional, defaults to +63
 ```
 
-Sign up at [semaphore.co](https://semaphore.co/), load the account with credits, and copy the API key from the dashboard. Leaving `SEMAPHORE_SMS_ENABLED` unset runs the app exactly as before, just without SMS.
+Full walkthrough — installing the app, getting the key, and choosing cloud vs. local mode — is in the deployment guide. Leaving `TRACCAR_SMS_ENABLED` unset runs the app exactly as before, just without SMS.
 
 ---
 
