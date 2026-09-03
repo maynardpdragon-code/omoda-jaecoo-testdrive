@@ -44,7 +44,7 @@ router.post('/:carId/call-next', async (req, res) => {
         // unreachable or unconfigured just reports back through `sms.reason`.
         let sms = null;
         if (nextReg) {
-            const message = `Hello ${nextReg.name}! Your ticket ${nextReg.ticket_number} is now being called for the ${nextReg.car_display} test drive. Please proceed to the registration area.`;
+            const message = `Hi ${nextReg.name}! Your ${nextReg.car_display} is now ready for test drive. Please proceed to the registration area. Thank you!`;
             sms = await sendSms(nextReg.contact, message);
         }
 
