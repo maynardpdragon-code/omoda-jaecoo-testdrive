@@ -1,14 +1,13 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-    /* OMODA & JAECOO brand palette — light base with a two-tone teal accent
-       (PANTONE 549 C / PANTONE 5493 C) */
-    --primary: #6ba4b8;        /* PANTONE 549 C — active/selected/CTA fills */
-    --primary-strong: #3f7286; /* darker 549 C — legible as text/line on light bg */
-    --primary-dark: #517e8f;   /* darker 549 C — hover/pressed fills */
+    /* OMODA & JAECOO brand palette — light base, single main color
+       (PANTONE 549 C) with tint/shade variants for hover and text contrast */
+    --primary: #6ba4b8;        /* PANTONE 549 C — THE main brand color, used for fills */
+    --primary-light: #96bdcb;  /* lighter tint of 549 C — hover/secondary fills */
+    --primary-dark: #517e8f;   /* darker shade of 549 C — hover/pressed fills */
+    --primary-strong: #3f7286; /* darker shade of 549 C — legible as text/line on light bg */
     --secondary: #f4f8f9;
-    --accent: #7fa9ae;         /* PANTONE 5493 C — hover/secondary fills */
-    --accent-hover: #a9c8cc;
     --success: #3f9d5d;
     --success-text: #2f7a48;   /* darker success, legible as text on light bg */
     --warning: #c99a3f;
@@ -36,32 +35,29 @@ body {
     background-repeat: no-repeat, no-repeat, no-repeat;
 }
 
-/* ── Navigation ── */
+/* ── Navigation ──
+   Kept black regardless of the light page theme — the official OMODA &
+   JAECOO logo asset has white lettering baked in and only reads correctly
+   on a dark background (matches how omodajaecoo.com itself does it). */
 .nav {
-    background: #ffffff;
+    background: #000000;
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 10px rgba(24, 36, 40, 0.05);
+    border-bottom: 1px solid #000000;
+    box-shadow: 0 2px 10px rgba(24, 36, 40, 0.15);
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    background: #000000;
-    padding: 10px 18px;
-}
+.logo { display: flex; align-items: center; text-decoration: none; }
 .logo img { height: 22px; width: auto; display: block; }
 
 .nav-brand { display: flex; align-items: center; gap: 1rem; }
 .nav-brand-title {
-    color: var(--text);
+    color: #ffffff;
     font-size: 1rem;
     font-weight: 400;
     text-transform: uppercase;
@@ -72,8 +68,8 @@ body {
 .nav-links { display: flex; gap: 1rem; flex-wrap: wrap; }
 .nav-links button {
     background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
+    border: 1px solid #3a3a3a;
+    color: #ffffff;
     padding: 0.5rem 1.5rem;
     border-radius: 0;
     cursor: pointer;
@@ -84,8 +80,8 @@ body {
     text-transform: uppercase;
 }
 .nav-links button:hover {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--primary-light);
+    border-color: var(--primary-light);
     color: #0a0a0a;
 }
 .nav-links button.active {
@@ -97,16 +93,16 @@ body {
 .btn-logout {
     background: transparent;
     border: none;
-    color: var(--text-muted);
+    color: #999999;
     padding: 0.5rem 0.7rem;
     border-radius: 0;
     cursor: pointer;
     font-size: 1rem;
     line-height: 1;
     transition: all 0.25s ease;
-    opacity: 0.7;
+    opacity: 0.8;
 }
-.btn-logout:hover { color: var(--primary-strong); opacity: 1; background: rgba(127,169,174,0.1); }
+.btn-logout:hover { color: var(--primary-light); opacity: 1; background: rgba(255,255,255,0.08); }
 
 /* ── Page Container ── */
 .page { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.3s ease; }
@@ -210,7 +206,7 @@ body {
     cursor: pointer;
     transition: all 0.25s ease;
 }
-.car-option:hover { border-color: var(--accent); }
+.car-option:hover { border-color: var(--primary-light); }
 .car-option.selected { border-color: var(--primary); background: rgba(107, 164, 184, 0.14); }
 .car-option input { display: none; }
 .car-option-name { font-weight: 600; margin-top: 0.5rem; font-size: 0.95rem; letter-spacing: 0.5px; }
@@ -236,7 +232,7 @@ body {
 .btn-warning   { background: var(--warning); color: #1a1300; border-color: var(--warning); }
 .btn-danger    { background: var(--danger); color: white; border-color: var(--danger); }
 .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
-.btn-secondary:hover { border-color: var(--accent); background: rgba(127,169,174,0.1); }
+.btn-secondary:hover { border-color: var(--primary-light); background: rgba(150,189,203,0.15); }
 
 /* ── Ticket Page ── */
 .ticket-container { max-width: 906px; margin: 0 auto; text-align: center; }
@@ -315,7 +311,7 @@ body {
     letter-spacing: 1.5px;
     font-size: 0.8rem;
 }
-.admin-tab:hover { background: var(--accent); border-color: var(--accent); color: #0a0a0a; }
+.admin-tab:hover { background: var(--primary-light); border-color: var(--primary-light); color: #0a0a0a; }
 .admin-tab.active { background: var(--primary); border-color: var(--primary); color: #0a0a0a; }
 
 .admin-panel { display: none; animation: fadeIn 0.3s ease; }
@@ -363,7 +359,7 @@ body {
     color: var(--text);
 }
 .btn-excel:hover,
-.btn-pdf:hover { border-color: var(--accent); background: rgba(127,169,174,0.1); }
+.btn-pdf:hover { border-color: var(--primary-light); background: rgba(150,189,203,0.15); }
 
 .response-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
 .response-table th,
