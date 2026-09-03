@@ -35,11 +35,11 @@
             <h2 class="admin-login-title">🔐 Sign In</h2>
             <form id="auth-login-form">
                 <div class="form-group">
-                    <label style="color: #ffffff;"><b>Username</b></label>
+                    <label><b>Username</b></label>
                     <input type="text" id="auth-username" required placeholder="Enter username" autocomplete="username">
                 </div>
                 <div class="form-group">
-                    <label style="color: #ffffff;"><b>Password</b></label>
+                    <label><b>Password</b></label>
                     <input type="password" id="auth-password" required placeholder="Enter password" autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn btn-primary">Sign In</button>
@@ -57,7 +57,7 @@
     <!-- ═══════════════════════ PAGE: REGISTER ══════════════════════════════ -->
     <div class="page" id="page-register">
         <div class="form-container">
-            <h2 class="form-title" style="color: #f6f6f6;">Register for a Test Drive</h2>
+            <h2 class="form-title">Register for a Test Drive</h2>
             <form id="registration-form">
                 <div class="form-group">
                     <label><b>Full Name *</b></label>
@@ -135,7 +135,7 @@
     <div class="page" id="page-admin">
         <div class="admin-dashboard active" id="admin-dashboard">
             <div class="admin-header">
-                <h1 class="admin-title" style="color: #ffffff;">📊 Admin Dashboard</h1>
+                <h1 class="admin-title">📊 Admin Dashboard</h1>
             </div>
 
             <div class="admin-tabs">
@@ -157,15 +157,15 @@
                     <table class="response-table">
                         <thead>
                             <tr>
-                                <th style="color: #ffffff;">Ticket #</th>
-                                <th style="color: #ffffff;">Name</th>
-                                <th style="color: #ffffff;">Contact</th>
-                                <th style="color: #ffffff;">Dealer</th>
-                                <th style="color: #ffffff;">SC Name</th>
-                                <th style="color: #ffffff;">Car Model</th>
-                                <th style="color: #ffffff;">Status</th>
-                                <th style="color: #ffffff;">Time</th>
-                                <th style="color: #ffffff;">Actions</th>
+                                <th>Ticket #</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Dealer</th>
+                                <th>SC Name</th>
+                                <th>Car Model</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="response-table-body"></tbody>
@@ -176,7 +176,7 @@
             <!-- Tab: Call Out Dashboard -->
             <div class="admin-panel" id="panel-callout">
                 <div class="callout-header-actions">
-                    <h2 style="color: #ffffff; font-size:1.2rem;">Live Queue Management</h2>
+                    <h2 style="font-size:1.2rem;">Live Queue Management</h2>
                     <button class="btn btn-secondary" onclick="openCarManager()"
                         style="width:auto; padding:0.5rem 1rem;">⚙️ Manage Vehicles</button>
                 </div>
@@ -211,8 +211,8 @@
                 <h3 class="modal-title">Manage Vehicles</h3>
                 <button class="modal-close" onclick="closeCarManager()">×</button>
             </div>
-            <div style="background:rgba(255,255,255,0.05); padding:1.5rem; border-radius:10px; margin-bottom:1rem;">
-                <h4 style="margin-bottom:1rem; color:#ffffff;" id="car-form-title">Add New Vehicle</h4>
+            <div style="background:rgba(0,0,0,0.03); padding:1.5rem; border-radius:10px; margin-bottom:1rem;">
+                <h4 style="margin-bottom:1rem;" id="car-form-title">Add New Vehicle</h4>
                 <input type="hidden" id="edit-car-id">
                 <div class="form-group">
                     <label><b>Model Name</b></label>
