@@ -19,7 +19,8 @@ testdrive/
 │       └── queue.js       # call-next, complete, skip actions
 └── frontend/
     ├── index.html         # Clean HTML, no inline JS/CSS
-    ├── logo.svg            # OMODA & JAECOO-styled wordmark (vector, editable)
+    ├── assets/
+    │   └── omoda-jaecoo-logo.png  # Official OMODA & JAECOO wordmark
     ├── favicon.svg
     ├── css/
     │   └── style.css      # All styles (OMODA & JAECOO black/white theme)
@@ -101,7 +102,7 @@ Full walkthrough — installing the app, getting the key, and choosing cloud vs.
 
 ## Branding
 
-The `logo.svg` and `favicon.svg` in `frontend/` are custom vector wordmarks styled after OMODA & JAECOO's black/white identity (not the official OMODA & JAECOO logo asset). Swap them for the official logo file provided by your brand/marketing team when available — just keep the filenames the same, or update the `<img src>` / `<link>` references in `index.html`.
+The nav logo at `frontend/assets/omoda-jaecoo-logo.png` is the official OMODA & JAECOO wordmark. `favicon.svg` in `frontend/` is a custom vector mark styled after the brand's black/white identity (not an official asset) — swap it for an official favicon file when available, keeping the filename the same, or update the `<link>` reference in `index.html`.
 
 ---
 
