@@ -27,12 +27,11 @@ body {
     min-height: 100vh;
     background-color: #f4f8f9;
     background-image:
-        radial-gradient(circle at 15% 0%, rgba(107, 164, 184, 0.10) 0%, transparent 45%),
-        radial-gradient(circle at 100% 30%, rgba(127, 169, 174, 0.08) 0%, transparent 40%),
-        linear-gradient(180deg, #f7fafb 0%, #eef3f4 100%);
-    background-attachment: fixed;
-    background-size: cover, cover, cover;
-    background-repeat: no-repeat, no-repeat, no-repeat;
+        linear-gradient(180deg, rgba(244, 248, 249, 0.82) 0%, rgba(238, 243, 244, 0.88) 100%),
+        url('../assets/omoda-jaecoo-lineup-hero.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
 }
 
 /* ── Navigation ──
