@@ -1,24 +1,27 @@
 // frontend/js/auth.js
-// Site-wide login gate. One login endpoint, three possible roles — which
-// credentials were entered decides what the visitor can see:
-//   admin    - every tab (Display, Register, My Ticket, Admin dashboard)
-//   display  - only the Display tab, for a TV/projector
-//   register - only the Register tab, for a self-service kiosk
-// The role is cached in localStorage so a kiosk device (TV, tablet) stays
-// logged in across refreshes/restarts instead of needing re-entry each time.
+// Access control. Display and Register are open to everyone — no sign-in.
+// Only the Admin dashboard is protected by a username/password.
+//
+//   guest    - default for every visitor: Display, Register, My Ticket (+ an Admin button that asks for sign-in)
+//   admin    - after signing in: every tab including the Admin dashboard
+//   display  - kiosk mode, open  /?mode=display   -> Display only (TV/projector)
+//   register - kiosk mode, open  /?mode=register  -> Register only (auto-prints ticket)
+//
+// Only the admin session is cached in localStorage, so the admin stays signed in across refreshes.
 
 let currentRole = null;
 
 const ROLE_PAGES = {
     admin:    ['display', 'register', 'ticket', 'admin'],
+    guest:    ['display', 'register', 'ticket', 'admin'],
     display:  ['display'],
     register: ['register'],
 };
-const ROLE_DEFAULT_PAGE = { admin: 'admin', display: 'display', register: 'register' };
+const ROLE_DEFAULT_PAGE = { admin: 'admin', guest: 'register', display: 'display', register: 'register' };
 
 function applyRole(role) {
     currentRole = role;
-    localStorage.setItem('authRole', role);
+    if (role === 'admin') localStorage.setItem('authRole', 'admin');
 
     document.getElementById('page-login').classList.remove('active');
     document.getElementById('main-nav').style.display = 'flex';
@@ -27,24 +30,28 @@ function applyRole(role) {
     ['display', 'register', 'ticket', 'admin'].forEach(p => {
         document.getElementById(`nav-${p}`).style.display = allowed.includes(p) ? '' : 'none';
     });
-    // Single-page roles (Display/Register kiosks) have nothing to switch
-    // between, so the nav links row would just be one pointless button —
-    // hide the whole row for a cleaner kiosk/TV look.
+    // Single-page kiosk modes have nothing to switch between, so hide the nav row.
     document.getElementById('nav-links').style.display = allowed.length > 1 ? '' : 'none';
+    // Only an admin session has anything to log out of.
+    document.getElementById('nav-logout').style.display = role === 'admin' ? '' : 'none';
 
     if (typeof startApp === 'function') startApp();
     showPage(ROLE_DEFAULT_PAGE[role] || allowed[0]);
 }
 
-function logout() {
-    currentRole = null;
-    localStorage.removeItem('authRole');
-    localStorage.removeItem('currentTicketId');
-
+// Admin tab: straight in if already signed in, otherwise show the sign-in form.
+function openAdmin() {
+    if (currentRole === 'admin') return showPage('admin');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+    document.getElementById('nav-admin').classList.add('active');
     document.getElementById('page-login').classList.add('active');
-    document.getElementById('main-nav').style.display = 'none';
+}
+
+function logout() {
+    localStorage.removeItem('authRole');
     document.getElementById('auth-login-form').reset();
+    applyRole('guest');
 }
 
 document.getElementById('auth-login-form').addEventListener('submit', async (e) => {
@@ -52,16 +59,18 @@ document.getElementById('auth-login-form').addEventListener('submit', async (e) 
     const username = document.getElementById('auth-username').value;
     const password = document.getElementById('auth-password').value;
     try {
-        const result = await AuthAPI.login({ username, password });
-        applyRole(result.role);
+        await AuthAPI.login({ username, password });
+        applyRole('admin');
+        document.getElementById('auth-login-form').reset();
         showNotification('Login successful!');
     } catch {
         showNotification('Invalid credentials', 'error');
     }
 });
 
-// Restore a cached role on load, so kiosk devices skip the login screen.
-(function restoreSession() {
-    const savedRole = localStorage.getItem('authRole');
-    if (savedRole && ROLE_PAGES[savedRole]) applyRole(savedRole);
+// Pick the starting role: kiosk URL mode > cached admin session > open guest access.
+(function init() {
+    const mode = new URLSearchParams(location.search).get('mode');
+    if (mode === 'display' || mode === 'register') return applyRole(mode);
+    applyRole(localStorage.getItem('authRole') === 'admin' ? 'admin' : 'guest');
 })();

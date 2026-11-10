@@ -22,17 +22,17 @@
             <button onclick="showPage('display')" id="nav-display">Display</button>
             <button onclick="showPage('register')" id="nav-register">Register</button>
             <button onclick="showPage('ticket')" id="nav-ticket">My Ticket</button>
-            <button onclick="showPage('admin')" id="nav-admin">Admin</button>
+            <button onclick="openAdmin()" id="nav-admin">Admin</button>
         </div>
         <button onclick="logout()" id="nav-logout" class="btn-logout" title="Log out">⏻</button>
     </nav>
 
     <div class="notification" id="notification"></div>
 
-    <!-- ═══════════════════════ PAGE: SIGN IN ═══════════════════════════════ -->
-    <div class="page active" id="page-login">
+    <!-- ═══════════════════════ PAGE: ADMIN SIGN IN (only the Admin tab needs it) ═══════════════════════════════ -->
+    <div class="page" id="page-login">
         <div class="admin-login">
-            <h2 class="admin-login-title">🔐 Sign In</h2>
+            <h2 class="admin-login-title">🔐 Admin Sign In</h2>
             <form id="auth-login-form">
                 <div class="form-group">
                     <label><b>Username</b></label>

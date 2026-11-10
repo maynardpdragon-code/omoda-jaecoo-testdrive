@@ -60,17 +60,16 @@ The database file (`queue.db`) is created automatically in the `backend/` folder
 
 ## Configuration
 
-### Login roles
+### Access
 
-The site is gated behind a single sign-in screen. Which credentials you enter decides what you see next — each role is meant for a different device:
+**Display** and **Register** are public — no sign-in. Anyone who opens the site can view the live queue, register, and see their ticket. Only the **Admin** tab asks for a username and password.
 
-| Role | Unlocks | Typical device |
-|------|---------|----------------|
-| **Admin** | Every tab: Display, Register, My Ticket, Admin dashboard | Staff laptop/phone |
-| **Display** | Only the Display tab (live queue status) | TV/projector for public viewing |
-| **Register** | Only the Register tab — submitting auto-prints the ticket and resets the form for the next guest, kiosk-style | Tablet for self-service registration |
+For single-purpose devices, open the site with a mode in the URL:
 
-A device stays signed in across refreshes/restarts (cached in the browser's local storage) — use the Logout button in the corner to switch roles on that device.
+| URL | Shows | Typical device |
+|-----|-------|----------------|
+| `/?mode=display`  | Only the live queue Display | TV/projector |
+| `/?mode=register` | Only the Register form — submitting auto-prints the ticket and resets for the next guest | Tablet kiosk |
 
 **Admin** — default: `admin` / `Dragonai2026!`. **Change this before going live.** Override with environment variables:
 
@@ -78,12 +77,7 @@ A device stays signed in across refreshes/restarts (cached in the browser's loca
 ADMIN_USER=myuser ADMIN_PASS=mypassword npm start
 ```
 
-**Display** and **Register** have no default — each is disabled until you set both its username and password:
-
-```bash
-DISPLAY_USER=tvscreen   DISPLAY_PASS=mypassword
-REGISTER_USER=kiosk     REGISTER_PASS=mypassword
-```
+The admin session is cached in the browser's local storage; use the Logout button to sign out.
 
 ### SMS notifications (Traccar SMS Gateway)
 
@@ -122,7 +116,7 @@ The nav logo at `frontend/assets/omoda-jaecoo-logo.png` is the official OMODA & 
 | POST   | `/api/queue/:carId/call-next` | Call next customer |
 | POST   | `/api/queue/:carId/complete` | Complete current service |
 | POST   | `/api/queue/:carId/skip` | Skip current customer |
-| POST   | `/api/auth/login` | Admin login `{ username, password }` |
+| POST   | `/api/auth/login` | Admin login (the only protected area) `{ username, password }` |
 
 ---
 
