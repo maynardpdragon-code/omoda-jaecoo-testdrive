@@ -1,7 +1,7 @@
 // frontend/js/app.js
 // Bootstrap: init, registration form, polling
-// Nothing here runs until auth.js calls startApp() after a successful login
-// (or a restored session), since none of it is useful pre-login.
+// startApp() is called by auth.js when a role is applied, and once more at the
+// bottom of this file, because auth.js loads before this script on page load.
 
 let appStarted = false;
 
@@ -94,3 +94,7 @@ async function printKioskTicket() {
 
     window.print();
 }
+
+// auth.js already picked a role (guest/admin/kiosk) before this file loaded, so
+// its startApp() call was a no-op. Start now so polling begins on first load.
+if (typeof currentRole !== 'undefined' && currentRole) startApp();

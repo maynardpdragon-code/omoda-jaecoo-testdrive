@@ -63,8 +63,14 @@ document.getElementById('auth-login-form').addEventListener('submit', async (e) 
         applyRole('admin');
         document.getElementById('auth-login-form').reset();
         showNotification('Login successful!');
-    } catch {
-        showNotification('Invalid credentials', 'error');
+    } catch (err) {
+        // Only a real 401 means wrong credentials; anything else is a connection problem.
+        showNotification(
+            err.message === 'Invalid credentials'
+                ? 'Invalid credentials'
+                : 'Could not reach the server. Make sure the backend is running.',
+            'error'
+        );
     }
 });
 
