@@ -49,13 +49,10 @@ body {
     font-family: 'MiSans', 'Inter', 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: var(--text);
     min-height: 100vh;
-    background-color: var(--grey-50);
+    background-color: #0f2a4d;
     background-image:
-        radial-gradient(900px 520px at 92% -8%,  rgba(6, 182, 212, 0.22), transparent 60%),
-        radial-gradient(800px 480px at -8% 12%,  rgba(103, 232, 249, 0.22), transparent 58%),
-        radial-gradient(700px 500px at 50% 110%, rgba(6, 182, 212, 0.10), transparent 60%),
-        linear-gradient(180deg, #f9fbfc 0%, #edf1f3 100%),
-    url('../assets/oj-bg2.png');
+    linear-gradient(180deg, rgba(244, 248, 249, 0.82) 0%, rgba(238, 243, 244, 0.88) 80%),
+        url('../assets/oj-bg2.png');
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
 }
