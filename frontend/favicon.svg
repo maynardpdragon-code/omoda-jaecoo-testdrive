@@ -1,6 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" fill="#000000"/>
-  <rect x="6" y="6" width="52" height="52" fill="none" stroke="#6ba4b8" stroke-width="2"/>
-  <text x="32" y="42" font-family="'MiSans','Helvetica Neue',Arial,sans-serif" font-weight="600"
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14191c"/>
+      <stop offset="1" stop-color="#38444b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#g)"/>
+  <rect x="6" y="6" width="52" height="52" rx="10" fill="none" stroke="#06b6d4" stroke-width="2.5"/>
+  <text x="32" y="42" font-family="'MiSans','Helvetica Neue',Arial,sans-serif" font-weight="700"
         font-size="24" letter-spacing="1" fill="#ffffff" text-anchor="middle">OJ</text>
 </svg>

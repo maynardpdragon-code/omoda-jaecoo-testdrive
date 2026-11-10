@@ -231,10 +231,10 @@ async function exportToPDF() {
         </tr>`).join('');
 
     const html = `<!DOCTYPE html><html><head><title>Registrations</title>
-        <style>body{font-family:Arial;padding:20px}h1{color:#111111}
+        <style>body{font-family:Arial;padding:20px}h1{color:#14191c}
         table{width:100%;border-collapse:collapse;margin-top:20px}
         th,td{border:1px solid #ddd;padding:10px;text-align:left}
-        th{background:#000000;color:white}tr:nth-child(even){background:#f5f5f5}</style>
+        th{background:#0e7490;color:white}tr:nth-child(even){background:#f2f6f7}</style>
         </head><body>
         <h1>🚗 OMODA & JAECOO Test Drive Registrations</h1>
         <p>Generated: ${new Date().toLocaleString()}</p>
